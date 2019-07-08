@@ -1,0 +1,6 @@
+-r requirements.txt
+-e .
+
+pytest
+pytest-xdist
+pytest-cov
