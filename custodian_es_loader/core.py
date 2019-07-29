@@ -27,11 +27,8 @@ def load_resources(resources_path):
 def generate_id(resource, metadata):
     resource_type = metadata['policy']['resource']
 
-    id = "{}-{}-{}".format(
-        metadata['policy'],
-        metadata['execution']['start'],
-        utils.resource_id(resource_type, resource)
-    )
+    id = "{}-{}-{}".format(metadata['policy'], metadata['execution']['start'],
+                           utils.resource_id(resource_type, resource))
     id = hashlib.sha3_256(id.encode('utf-8')).hexdigest()
 
     return id
@@ -43,37 +40,38 @@ def process_resources(resources, metadata):
     resource_type = metadata['policy']['resource']
     region = metadata['config']['region']
 
-    es_client = Elasticsearch(['localhost'], sniff_on_connection_fail=True, port=32775, http_auth=('elastic', 'changeme'))
+    es_client = Elasticsearch(['localhost'],
+                              sniff_on_connection_fail=True,
+                              port=32775,
+                              http_auth=('elastic', 'changeme'))
 
     for resource in resources:
         resource_doc = dict(
-            resource,
-            **{
-               'id': execution['id'],
+            resource, **{
+                'id': execution['id'],
                 'policy_name': policy['name'],
-                'start_time': datetime.datetime.fromtimestamp(execution['start']),
-                'end_time': datetime.datetime.fromtimestamp(execution['end_time']),
+                'start_time':
+                datetime.datetime.fromtimestamp(execution['start']),
+                'end_time':
+                datetime.datetime.fromtimestamp(execution['end_time']),
                 'duration': execution['duration'],
                 'region': region
-            }
-        )
+            })
 
         document_id = generate_id(resource, metadata)
 
         try:
-            result = es_client.index(index=resource_type, body=resource_doc, id=document_id)
+            result = es_client.index(index=resource_type,
+                                     body=resource_doc,
+                                     id=document_id)
 
         except elasticsearch.exceptions.TransportError:
-            print("Something went wrong with the connection to ElasticSearch. Aborting.")
+            print(
+                "Something went wrong with the connection to ElasticSearch. Aborting."
+            )
             sys.exit()
 
         if result['result'] == "updated":
             print("Record {} already existed. Updated.".format(document_id))
         else:
             print("Record {} created.".format(document_id))
-
-
-
-
-
-

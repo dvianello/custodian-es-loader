@@ -1,7 +1,7 @@
 import sys
 
-def resource_id(resource_type, resource_obj):
 
+def resource_id(resource_type, resource_obj):
     if resource_type == "ec2":
         return resource_obj['InstanceId']
 
