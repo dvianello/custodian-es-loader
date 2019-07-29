@@ -5,3 +5,4 @@ pytest
 pytest-xdist
 pytest-cov
 flake8
+yapf
