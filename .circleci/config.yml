@@ -46,7 +46,9 @@ jobs:
           name: PEP8 checks
           command: |
             . venv/bin/activate
+            echo "Running yapf"
             yapf -r --diff .
+            echo "Running flake8"
             flake8 custodian_es_loader/
 
       - run:
