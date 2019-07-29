@@ -2,7 +2,10 @@
 #
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 #
-version: 2
+version: 2.1
+orbs:
+  codecov: codecov/codecov@1.0.2
+  
 jobs:
   build:
     docker:
@@ -40,7 +43,12 @@ jobs:
           key: v1-dependencies-{{ checksum "requirements-dev.txt" }}
 
       - run:
-          name: run tests
+          name: PEP8 checks
+          command: |
+            flake8 custodian_es_loader/
+
+      - run:
+          name: Run Tests
           command: |
             . venv/bin/activate
             mkdir test-reports
@@ -49,3 +57,6 @@ jobs:
       - store_artifacts:
           path: test-reports
           destination: test-reports
+
+      - store_test_results:
+          path: test-reports
