@@ -50,10 +50,8 @@ def process_resources(resources, metadata):
             resource, **{
                 'id': execution['id'],
                 'policy_name': policy['name'],
-                'start_time':
-                datetime.datetime.fromtimestamp(execution['start']),
-                'end_time':
-                datetime.datetime.fromtimestamp(execution['end_time']),
+                'start_time': datetime.datetime.fromtimestamp(execution['start']),
+                'end_time': datetime.datetime.fromtimestamp(execution['end_time']),
                 'duration': execution['duration'],
                 'region': region
             })
@@ -61,14 +59,10 @@ def process_resources(resources, metadata):
         document_id = generate_id(resource, metadata)
 
         try:
-            result = es_client.index(index=resource_type,
-                                     body=resource_doc,
-                                     id=document_id)
+            result = es_client.index(index=resource_type, body=resource_doc, id=document_id)
 
         except elasticsearch.exceptions.TransportError:
-            print(
-                "Something went wrong with the connection to ElasticSearch. Aborting."
-            )
+            print("Something went wrong with the connection to ElasticSearch. Aborting.")
             sys.exit()
 
         if result['result'] == "updated":
